@@ -1,3 +1,5 @@
+from app import app
+
 from flask import Flask
 from flask import url_for
 import flask
@@ -9,24 +11,31 @@ from google_auth_oauthlib.flow import Flow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 
-
-app = Flask(__name__)
-
 @app.route('/')
-def hello_world():
-    return 'Hello, World'
+def hello():
+    return "hello"
 
+#
+#
+# export OAUTHLIB_RELAX_TOKEN_SCOPE=1
+# если вдруг будут траблы `вродеwarning scope has changed from "" to ""`
+#
+#
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly']
-CLIENT_SECRETS_FILE = 'credentials.json'
-global_state = ''
+SCOPES = ['https://www.googleapis.com/auth/drive']
+CLIENT_SECRETS_FILE = 'app/google_drive/credentials.json'
 
 @app.route('/authorize')
 def authorize():
     # Create flow instance to manage the OAuth 2.0 Authorization Grant Flow steps.
     flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRETS_FILE, scopes=SCOPES)
 
+    #
+    #
+    # Тут еще можно сохранять токен, который прилетел и использовать его
+    # а не проходить эти круги ада с подтверждением
+    #
 
     # The URI created here must exactly match one of the authorized redirect URIs
     # for the OAuth 2.0 client, which you configured in the API Console. If this
@@ -42,7 +51,6 @@ def authorize():
         include_granted_scopes='true')
 
     # Store the state so the callback can verify the auth server response.
-    global_state = state
 
     return flask.redirect(authorization_url)
 
@@ -51,7 +59,7 @@ def authorize():
 def oauth2callback():
     # Specify the state when creating the flow in the callback so that it can
     # # verified in the authorization server response.
-    state = global_state
+    state = flask.request.args.get('state')
 
     flow = Flow.from_client_secrets_file(
         CLIENT_SECRETS_FILE, scopes=SCOPES, state=state)
