@@ -11,16 +11,10 @@ from google_auth_oauthlib.flow import Flow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 
+
 @app.route('/')
 def hello():
-    return "hello"
-
-#
-#
-# export OAUTHLIB_RELAX_TOKEN_SCOPE=1
-# если вдруг будут траблы `вродеwarning scope has changed from "" to ""`
-#
-#
+    return "heloo"
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/drive']
