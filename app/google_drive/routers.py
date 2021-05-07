@@ -2,6 +2,7 @@ from app import app
 
 from flask import Flask
 from flask import url_for
+from flask import jsonify
 import flask
 
 import os.path
@@ -11,43 +12,30 @@ from google_auth_oauthlib.flow import Flow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 
+from .utils import get_token, get_authorization_url_ans_store_state
+
 
 @app.route('/')
 def hello():
-    return "heloo"
+    return jsonify(name='nameee', sl='lsssss')
+
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/drive']
 CLIENT_SECRETS_FILE = 'app/google_drive/credentials.json'
 
+
 @app.route('/authorize')
 def authorize():
-    # Create flow instance to manage the OAuth 2.0 Authorization Grant Flow steps.
-    flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRETS_FILE, scopes=SCOPES)
+    token = get_token(1)
+    if token is not None:
+        return jsonify(token=token)
 
-    #
-    #
-    # Тут еще можно сохранять токен, который прилетел и использовать его
-    # а не проходить эти круги ада с подтверждением
-    #
+    url = get_authorization_url_ans_store_state(1)
 
-    # The URI created here must exactly match one of the authorized redirect URIs
-    # for the OAuth 2.0 client, which you configured in the API Console. If this
-    # value doesn't match an authorized URI, you will get a 'redirect_uri_mismatch'
-    # error.
-    flow.redirect_uri = url_for('oauth2callback', _external=True, _scheme='https')
-
-    authorization_url, state = flow.authorization_url(
-        # Enable offline access so that you can refresh an access token without
-        # re-prompting the user for permission. Recommended for web server apps.
-        access_type='offline',
-        # Enable incremental authorization. Recommended as a best practice.
-        include_granted_scopes='true')
-
-    # Store the state so the callback can verify the auth server response.
-
-    return flask.redirect(authorization_url)
-
+    return {
+        'authorization_url': url
+    }
 
 @app.route('/oauth2callback')
 def oauth2callback():
@@ -68,6 +56,7 @@ def oauth2callback():
     # ACTION ITEM: In a production app, you likely want to save these
     #              credentials in a persistent database instead.
     credentials = flow.credentials
+    print(credentials_to_dict(credentials))
     # flask.session['credentials'] = credentials_to_dict(credentials)
 
     service = build('drive', 'v3', credentials=credentials)
@@ -86,3 +75,14 @@ def oauth2callback():
             result += u'{0} ({1})<br>'.format(item['name'], item['id'])
 
     return result
+
+
+def credentials_to_dict(credentials: Credentials) -> dict:
+    return {
+        'token': credentials.token,
+        'refresh_token': credentials.refresh_token,
+        'expiry': credentials.expiry,
+        'expired': credentials.expired,
+        'token_uri': credentials.token_uri,
+        'scopes': credentials.scopes
+    }
