@@ -28,7 +28,7 @@ SCOPES = ['https://www.googleapis.com/auth/drive']
 CLIENT_SECRETS_FILE = 'app/google_drive/credentials.json'
 
 
-@app.route('/authorize')
+@app.route('/authorize/google_drive')
 def authorize():
     credentials = get_credentials(2)
     if credentials is not None:
@@ -41,7 +41,7 @@ def authorize():
     }
 
 
-@app.route('/oauth2callback')
+@app.route('/oauth2callback/google_drive')
 def oauth2callback():
     # Specify the state when creating the flow in the callback so that it can
     # # verified in the authorization server response.
