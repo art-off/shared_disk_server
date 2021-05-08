@@ -14,7 +14,8 @@ class Credentials(db.Model):
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128))
-    google_token = db.Column(db.String(128))
+    password_hash = db.Column(db.String(128))
+    google_auth_state = db.Column(db.String(255))
     credentials_id = db.Column(db.Integer, db.ForeignKey(Credentials.id))
     credentials = db.relationship(Credentials, foreign_keys=credentials_id)
 
