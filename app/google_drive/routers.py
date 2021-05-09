@@ -1,12 +1,14 @@
 from app import app
 
-from flask import make_response
+from flask import make_response, request
 import flask
 
 from .utils import (get_credentials,
                     get_authorization_url_ans_store_state,
                     fetch_and_store__credentials,
                     get_files)
+
+from ..auth_utils import token_auth, get_token
 
 
 # If modifying these scopes, delete the file token.json.
@@ -15,11 +17,13 @@ CLIENT_SECRETS_FILE = 'app/google_drive/credentials.json'
 
 
 @app.route('/authorize/google_drive')
+@token_auth.login_required
 def authorize():
-    credentials = get_credentials(2)
+    token = get_token(request)
+    credentials = get_credentials(token)
     if credentials is not None:
         return make_response({'token': credentials.token}, 200)
-    url = get_authorization_url_ans_store_state(2)
+    url = get_authorization_url_ans_store_state(token)
 
     return make_response({'authorization_url': url}, 200)
 
@@ -34,6 +38,8 @@ def oauth2callback():
     return 'fine'
 
 
-@app.route('/files/<user_id>')
-def files(user_id):
-    return get_files(user_id)
+@app.route('/files')
+@token_auth.login_required
+def files():
+    token = get_token(request)
+    return get_files(token)

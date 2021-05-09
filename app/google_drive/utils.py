@@ -13,15 +13,15 @@ SCOPES = ['https://www.googleapis.com/auth/drive']
 CLIENT_SECRETS_FILE = 'app/google_drive/credentials.json'
 
 
-def get_credentials(user_id: int) -> Optional[google.oauth2.credentials.Credentials]:
-    curr_user = models.User.query.get(user_id)
+def get_credentials(user_token: str) -> Optional[google.oauth2.credentials.Credentials]:
+    curr_user = models.User.query.filter_by(token=user_token).first()
     if curr_user is None or curr_user.credentials is None:
         return None
 
     return google.oauth2.credentials.Credentials(curr_user.credentials.token)
 
 
-def get_authorization_url_ans_store_state(user_id: int) -> str:
+def get_authorization_url_ans_store_state(user_token: str) -> str:
     flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRETS_FILE, scopes=SCOPES)
 
     flow.redirect_uri = app.config['OAUTH_GOOGLE_REDIRECT_URL']
@@ -30,7 +30,7 @@ def get_authorization_url_ans_store_state(user_id: int) -> str:
         access_type='offline',
         include_granted_scopes='true')
 
-    curr_user = models.User.query.get(user_id)
+    curr_user = models.User.query.filter_by(token=user_token).first()
     if curr_user is not None:
         curr_user.google_auth_state = state
         db.session.add(curr_user)
@@ -57,8 +57,8 @@ def fetch_and_store__credentials(state: str, request_url: Any) -> None:
     db.session.commit()
 
 
-def get_files(user_id: int) -> Optional[list]:
-    credentials = get_credentials(user_id)
+def get_files(user_token: str) -> Optional[list]:
+    credentials = get_credentials(user_token)
     service = build('drive', 'v3', credentials=credentials)
 
     results = service.files().list(

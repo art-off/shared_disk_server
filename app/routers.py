@@ -9,7 +9,8 @@ from .auth_utils import token_auth, get_token
 @app.route('/')
 @token_auth.login_required
 def hello():
-    return 'hello holo'
+    token = get_token(request)
+    return token
 
 
 @app.route('/registration', methods=['POST'])
