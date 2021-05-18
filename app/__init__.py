@@ -1,11 +1,13 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
 
 from config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
+ma = Marshmallow(app)
 
 
 # from .models import User, Credentials
@@ -19,7 +21,7 @@ from datetime import datetime
 # print(User.query.all()[0].credentials_id)
 # print('hello2')
 from . import routers
-from .google_drive import routers
+from .google_drive import auth_routers, routers
 
 
 def add_user_to_debug():

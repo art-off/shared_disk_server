@@ -10,7 +10,6 @@ token_auth = HTTPTokenAuth()
 
 @token_auth.verify_token
 def verity_token(token):
-    print(token)
     user = User.query.filter_by(token=token).first()
     if user is not None:
         return user.token == token

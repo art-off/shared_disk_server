@@ -18,6 +18,9 @@ def registration():
     name = request.json.get('name')
     password = request.json.get('password')
 
+    if name is None or password is None:
+        return make_response({'error': 'required params does not exist'}, 403)
+
     error = register_user(name, password)
     if error is not None:
         return make_response({'error': error}, 404)
@@ -29,6 +32,9 @@ def registration():
 def auth():
     name = request.json.get('name')
     password = request.json.get('password')
+
+    if name is None or password is None:
+        return make_response({'error': 'required params does not exist'}, 403)
 
     token, error = auth_user(name, password)
     if error is not None:
