@@ -1,12 +1,7 @@
 from app import app
 
 from flask import make_response, request
-import flask
-
-from .auth_utils import (get_authorization_url_ans_store_state,
-                         fetch_and_store__credentials)
-from .utils import (get_credentials,
-                    get_files)
+from .utils import get_files
 
 from .responses.file import FileSchema
 from ..auth_utils import token_auth, get_token
@@ -17,7 +12,10 @@ from ..auth_utils import token_auth, get_token
 def files():
     token = get_token(request)
     folder = request.args.get('folder') or 'root'
-    next_page_token, files = get_files(token, folder)
+    error, next_page_token, files = get_files(token, folder)
+
+    if error is not None:
+        return make_response({'error': 'credentials_is_not_valid'}, 405)
+
     return make_response({'next_page_token': next_page_token,
                           'files': FileSchema(many=True).dump(files)}, 200)
-

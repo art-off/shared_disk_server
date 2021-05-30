@@ -8,23 +8,27 @@ from .auth_utils import get_credentials
 from typing import Optional, Any
 
 
-def get_files(user_token: str, folder: str) -> (Optional[str], list[File]):
+def get_files(user_token: str, folder: str) -> (Optional[str], Optional[str], list[File]):
     service = __get_service(user_token)
 
-    results = service.files().list(q=f'"{folder}" in parents').execute()
-    files = results.get('files', [])
-    next_page_token = results.get('nextPageToken', None)
+    try:
+        # из-за этой строчки все это в try
+        results = service.files().list(q=f'"{folder}" in parents').execute()
+        files = results.get('files', [])
+        next_page_token = results.get('nextPageToken', None)
 
-    response_files = []
-    for file in files:
-        tmp = file['mimeType'].split('.')[-1]
-        type = tmp if tmp == 'folder' else file['mimeType']
-        response_files.append(File(file['id'],
-                                   file['name'],
-                                   file['kind'],
-                                   type))
+        response_files = []
+        for file in files:
+            tmp = file['mimeType'].split('.')[-1]
+            type = tmp if tmp == 'folder' else file['mimeType']
+            response_files.append(File(file['id'],
+                                       file['name'],
+                                       file['kind'],
+                                       type))
 
-    return next_page_token, response_files
+        return None, next_page_token, response_files
+    except:
+        return 'credentials_is_not_valid', None, None
 
 
 def __get_service(user_token: str) -> Any:
