@@ -15,7 +15,8 @@ class Credentials(db.Model):
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(128))
+    name = db.Column(db.String(128), unique=True)
+    email = db.Column(db.String(128), unique=True)
     password_hash = db.Column(db.String(128))
     token = db.Column(db.String(128))
     google_auth_state = db.Column(db.String(255))

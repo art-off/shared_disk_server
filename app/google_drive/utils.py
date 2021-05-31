@@ -9,9 +9,8 @@ from typing import Optional, Any
 
 
 def get_files(user_token: str, folder: str) -> (Optional[str], Optional[str], list[File]):
-    service = __get_service(user_token)
-
     try:
+        service = __get_service(user_token)
         # из-за этой строчки все это в try
         results = service.files().list(q=f'"{folder}" in parents').execute()
         files = results.get('files', [])

@@ -16,12 +16,13 @@ def hello():
 @app.route('/registration', methods=['POST'])
 def registration():
     name = request.json.get('name')
+    email = request.json.get('email')
     password = request.json.get('password')
 
-    if name is None or password is None:
+    if name is None or password is None or email is None:
         return make_response({'error': 'required params does not exist'}, 403)
 
-    error = register_user(name, password)
+    error = register_user(name, email, password)
     if error is not None:
         return make_response({'error': error}, 404)
 
@@ -30,15 +31,17 @@ def registration():
 
 @app.route('/auth', methods=['POST'])
 def auth():
-    name = request.json.get('name')
+    email = request.json.get('email')
     password = request.json.get('password')
 
-    if name is None or password is None:
+    if email is None or password is None:
         return make_response({'error': 'required params does not exist'}, 403)
 
-    token, error = auth_user(name, password)
+    token, email, name, error = auth_user(email, password)
     if error is not None:
         return make_response({'error': error}, 404)
 
-    return make_response({'token': token}, 200)
+    return make_response({'token': token,
+                          'name': name,
+                          'email': email}, 200)
 
