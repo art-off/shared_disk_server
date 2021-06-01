@@ -17,9 +17,8 @@ def authorize():
     credentials = get_credentials(token)
     if credentials is not None:
         return make_response({'token': credentials.token}, 200)
-    url = get_authorization_url_ans_store_state(token)
 
-    return make_response({'authorization_url': url}, 200)
+    return make_response({'error': 'credentials_is_not_valid'}, 403)
 
 
 @app.route('/refresh_authorize/google_drive')

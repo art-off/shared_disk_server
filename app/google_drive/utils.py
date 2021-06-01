@@ -12,7 +12,7 @@ def get_files(user_token: str, folder: str) -> (Optional[str], Optional[str], li
     try:
         service = __get_service(user_token)
         # из-за этой строчки все это в try
-        results = service.files().list(q=f'"{folder}" in parents').execute()
+        results = service.files().list(q=f'"{folder}" in parents and trashed=false').execute()
         files = results.get('files', [])
         next_page_token = results.get('nextPageToken', None)
 
