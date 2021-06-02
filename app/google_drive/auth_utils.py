@@ -14,11 +14,12 @@ CLIENT_SECRETS_FILE = 'app/google_drive/credentials.json'
 
 
 def get_credentials(user_token: str) -> Optional[google.oauth2.credentials.Credentials]:
-    curr_user = models.User.query.filter_by(token=user_token).first()
-    if curr_user is None or curr_user.credentials is None:
+    user = __get_user_by_token(user_token)
+
+    if user.credentials is None:
         return None
 
-    return google.oauth2.credentials.Credentials(curr_user.credentials.token)
+    return google.oauth2.credentials.Credentials(user.credentials.token)
 
 
 def get_authorization_url_ans_store_state(user_token: str) -> str:
@@ -30,7 +31,7 @@ def get_authorization_url_ans_store_state(user_token: str) -> str:
         access_type='offline',
         include_granted_scopes='true')
 
-    curr_user = models.User.query.filter_by(token=user_token).first()
+    curr_user = __get_user_by_token(user_token)
     if curr_user is not None:
         curr_user.google_auth_state = state
         db.session.add(curr_user)
@@ -40,7 +41,7 @@ def get_authorization_url_ans_store_state(user_token: str) -> str:
 
 
 def fetch_and_store__credentials(state: str, request_url: Any) -> None:
-    curr_user = models.User.query.filter_by(google_auth_state=state).first()
+    curr_user = __get_user_by_state(state)
     if curr_user is None:
         return None
 
@@ -64,3 +65,21 @@ def __db_credentials_from_response(credentials: google.oauth2.credentials.Creden
                               expired=credentials.expired,
                               token_uri=credentials.token_uri,
                               scopes=' '.join(credentials.scopes))
+
+
+def __get_user_by_token(token):
+    user = models.Manager.query.filter_by(token=token).first()
+
+    if user is None:
+        user = models.Worker.query.filter_by(token=token).first
+
+    return user
+
+
+def __get_user_by_state(state):
+    user = models.Manager.query.filter_by(google_auth_state=state).first()
+
+    if user is None:
+        user = models.Worker.query.filter_by(google_auth_state=state).first
+
+    return user

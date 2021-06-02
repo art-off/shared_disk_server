@@ -7,8 +7,9 @@ from .worker import Worker
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Integer)
+    ready = db.Column(db.Boolean, default=False)
 
-    folder_url = db.Column(db.String(256))
+    folder_id = db.Column(db.String(256))
 
     __development_stage_id = db.Column(db.Integer, db.ForeignKey(DevelopmentStage.id))
     development_stage = db.relationship(DevelopmentStage, foreign_keys=__development_stage_id)

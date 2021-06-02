@@ -1,4 +1,5 @@
 from .models import User
+from .models import Worker, Manager, Customer, ProfessionType
 from app import db
 from hashlib import sha256, md5
 import validators
@@ -6,35 +7,79 @@ import validators
 from typing import Optional
 
 
-def register_user(name: str, email: str, password: str) -> Optional[str]:
-    if not name:
-        return 'name_is_empty'
-    if len(password) < 6:
-        return 'password_too_short'
-    if not validators.email(email):
-        return 'email_is_not_valid'
-    if User.query.filter_by(name=name).all() or User.query.filter_by(email=email).all():
+def register_worker(name, email, password, profession_id):
+    if Worker.query.filter_by(name=name).all() or Worker.query.filter_by(email=email).all():
         return 'user_already_exist'
 
-    user = User(name=name,
-                email=email,
-                token=__generate_token(name))
-    user.set_password(password)
+    worker = Worker(name=name,
+                    email=email,
+                    profession_type=ProfessionType.query.get(profession_id),
+                    token=__generate_token(name))
+    worker.set_password(password)
 
-    db.session.add(user)
+    db.session.add(worker)
     db.session.commit()
 
 
-def auth_user(email: str, password: str) -> (Optional[str], Optional[str], Optional[str], Optional[str]):
-    user = User.query.filter_by(email=email).first()
+def register_manager(name, email, password):
+    if Manager.query.filter_by(name=name).all() or Manager.query.filter_by(email=email).all():
+        return 'user_already_exist'
 
-    print(user)
+    manager = Manager(name=name,
+                      email=email,
+                      token=__generate_token(name))
+    manager.set_password(password)
+
+    db.session.add(manager)
+    db.session.commit()
+
+
+def register_customer(first_name, middle_name, last_name, email, password):
+    if Customer.query.filter_by(email=email).all():
+        return 'user_already_exist'
+
+    customer = Customer(first_name=first_name,
+                        middle_name=middle_name,
+                        last_name=last_name,
+                        email=email)
+    customer.set_password(password)
+
+    db.session.add(customer)
+    db.session.commit()
+
+
+# def register_user(name: str, email: str, password: str) -> Optional[str]:
+#     if not name:
+#         return 'name_is_empty'
+#     if len(password) < 6:
+#         return 'password_too_short'
+#     if not validators.email(email):
+#         return 'email_is_not_valid'
+#     if User.query.filter_by(name=name).all() or User.query.filter_by(email=email).all():
+#         return 'user_already_exist'
+#
+#     user = User(name=name,
+#                 email=email,
+#                 token=__generate_token(name))
+#     user.set_password(password)
+#
+#     db.session.add(user)
+#     db.session.commit()
+
+
+def auth_user(email: str, password: str) -> (Optional[str], Optional[str], Optional[str], bool, Optional[str]):
+    user = Manager.query.filter_by(email=email).first()
+    is_manager = True
     if user is None:
-        return None, None, None, 'user_does_not_exits'
-    if not user.check_password(password):
-        return None, None, None, 'invalid_password'
+        user = Worker.query.filter_by(email=email).first()
+        is_manager = False
 
-    return user.token, user.email, user.name, None
+    if user is None:
+        return None, None, None, None, 'user_does_not_exits'
+    if not user.check_password(password):
+        return None, None, None, None, 'invalid_password'
+
+    return user.token, user.email, user.name, is_manager, None
 
 
 def __generate_token(name: str) -> str:

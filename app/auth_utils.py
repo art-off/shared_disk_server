@@ -1,6 +1,6 @@
 from flask_httpauth import HTTPTokenAuth
 
-from .models import User
+from .models import Worker, Manager
 
 from typing import Optional
 
@@ -10,9 +10,13 @@ token_auth = HTTPTokenAuth()
 
 @token_auth.verify_token
 def verity_token(token):
-    user = User.query.filter_by(token=token).first()
-    if user is not None:
-        return user.token == token
+    worker = Worker.query.filter_by(token=token).first()
+    manager = Manager.query.filter_by(token=token).first()
+
+    if manager is not None:
+        return manager.token == token
+    if worker is not None:
+        return worker.token == token
     return False
 
 

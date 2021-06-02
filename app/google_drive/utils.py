@@ -8,6 +8,26 @@ from .auth_utils import get_credentials
 from typing import Optional, Any
 
 
+def __get_service(user_token: str) -> Any:
+    credentials = get_credentials(user_token)
+    service = build('drive', 'v3', credentials=credentials)
+    return service
+
+
+def create_folder(user_token, parent, folder_name):
+    try:
+        file_metadata = {
+            'name': folder_name,
+            'mimeType': 'application/vnd.google-apps.folder',
+            'parents': [parent],
+        }
+        file = __get_service(user_token).files().create(body=file_metadata,
+                                                        fields='id').execute()
+        return None, file.get('id')
+    except:
+        return 'credentials_is_not_valid', None
+
+
 def get_files(user_token: str, folder: str) -> (Optional[str], Optional[str], list[File]):
     try:
         service = __get_service(user_token)
@@ -30,7 +50,20 @@ def get_files(user_token: str, folder: str) -> (Optional[str], Optional[str], li
         return 'credentials_is_not_valid', None, None
 
 
-def __get_service(user_token: str) -> Any:
-    credentials = get_credentials(user_token)
-    service = build('drive', 'v3', credentials=credentials)
-    return service
+def give_permissions(user_token, file_id, user_email):
+    try:
+        service = __get_service(user_token)
+        user_permission = {
+            'type': 'user',
+            'role': 'writer',
+            'emailAddress': user_email
+        }
+        result = service.permissions().create(
+            fileId=file_id,
+            body=user_permission,
+            fields='id'
+        ).execute()
+
+        return None
+    except:
+        return 'credentials_is_not_valid'
