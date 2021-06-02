@@ -76,5 +76,5 @@ def add_professions_and_manager():
     db.session.commit()
 
 # add_professions_and_manager()
-
+#
 # print('debug users added')
