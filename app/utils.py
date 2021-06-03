@@ -67,7 +67,7 @@ def register_customer(first_name, middle_name, last_name, email, password):
 #     db.session.commit()
 
 
-def auth_user(email: str, password: str) -> (Optional[str], Optional[str], Optional[str], bool, Optional[str]):
+def auth_user(email: str, password: str) -> (str, Optional[str], Optional[str], Optional[str], bool, Optional[str]):
     user = Manager.query.filter_by(email=email).first()
     is_manager = True
     if user is None:
@@ -75,11 +75,11 @@ def auth_user(email: str, password: str) -> (Optional[str], Optional[str], Optio
         is_manager = False
 
     if user is None:
-        return None, None, None, None, 'user_does_not_exits'
+        return None, None, None, None, None, 'user_does_not_exits'
     if not user.check_password(password):
-        return None, None, None, None, 'invalid_password'
+        return None, None, None, None, None, 'invalid_password'
 
-    return user.token, user.email, user.name, is_manager, None
+    return user.id, user.token, user.email, user.name, is_manager, None
 
 
 def __generate_token(name: str) -> str:

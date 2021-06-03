@@ -1,5 +1,7 @@
 from . import app, db
 
+from datetime import datetime
+
 from flask import request, make_response
 from datetime import datetime
 
@@ -72,3 +74,85 @@ def start_project():
     db.session.commit()
 
     return make_response({'status': 'fine'}, 200)
+
+
+@app.route('/project/get')
+@token_auth.login_required
+def get_projects():
+    token = get_token(request)
+
+    user = __get_user(token)
+    if type(user) == Manager:
+        user_projects = Project.query.filter_by(manager=user).all()
+        return make_response({'projects': __projects_to_json(user_projects)}, 200)
+    elif type(user) == Worker:
+        tasks = Task.query.filter_by(worker=user).all()
+        stages = [x.development_stage for x in tasks]
+        projects = list(set([x.project for x in stages]))
+        return make_response({'projects': __projects_to_json(projects)}, 200)
+
+
+def __projects_to_json(projects):
+    json = []
+
+    for p in projects:
+        json.append({
+            'id': p.id,
+            'name': p.name,
+            'deadline': p.deadline.strftime("%Y-%m-%d"),
+            'start_time': p.start_date.strftime("%Y-%m-%d"),
+            'folder_id': p.folder_id,
+            'customer': {
+                'id': p.customer.id,
+                'first_name': p.customer.first_name,
+                'middle_name': p.customer.middle_name,
+                'last_name': p.customer.last_name,
+                'email': p.customer.email,
+            },
+            'manager': {
+                'id': p.manager.id,
+                'name': p.manager.name,
+                'email': p.manager.email,
+            },
+            'stages': __get_stages(p.id),
+        })
+
+    return json
+
+
+def __get_stages(project_id):
+    stages = DevelopmentStage.query.filter_by(project=Project.query.get(project_id)).all()
+    stages_json = []
+    for stage in stages:
+        stage_json = {
+            'id': stage.id,
+            'type': stage.development_stage_type.name,
+            'folder_id': stage.folder_id,
+            'tasks': []
+        }
+        tasks = Task.query.filter_by(development_stage=stage).all()
+        for task in tasks:
+            stage_json['tasks'].append({
+                'id': task.id,
+                'name': task.name,
+                'ready': task.ready,
+                'folder_id': task.folder_id,
+                'customer_folder_id': task.customer_folder_id,
+                'finally_folder_id': task.finally_folder_id,
+                'worker': {
+                    'id': task.worker.id,
+                    'name': task.worker.name,
+                    'email': task.worker.email,
+                    'profession_type': task.worker.profession_type.id,
+                }
+            })
+        stages_json.append(stage_json)
+
+    return stages_json
+
+
+def __get_user(token):
+    user = Manager.query.filter_by(token=token).first()
+    if user is None:
+        user = Worker.query.filter_by(token=token).first()
+    return user

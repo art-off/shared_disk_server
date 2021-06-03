@@ -71,7 +71,7 @@ def __get_user_by_token(token):
     user = models.Manager.query.filter_by(token=token).first()
 
     if user is None:
-        user = models.Worker.query.filter_by(token=token).first
+        user = models.Worker.query.filter_by(token=token).first()
 
     return user
 
@@ -80,6 +80,6 @@ def __get_user_by_state(state):
     user = models.Manager.query.filter_by(google_auth_state=state).first()
 
     if user is None:
-        user = models.Worker.query.filter_by(google_auth_state=state).first
+        user = models.Worker.query.filter_by(google_auth_state=state).first()
 
     return user

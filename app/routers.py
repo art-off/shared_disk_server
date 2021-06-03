@@ -101,11 +101,12 @@ def auth():
     if email is None or password is None:
         return make_response({'error': 'required params does not exist'}, 403)
 
-    token, email, name, is_manager, error = auth_user(email, password)
+    id, token, email, name, is_manager, error = auth_user(email, password)
     if error is not None:
         return make_response({'error': error}, 404)
 
-    return make_response({'token': token,
+    return make_response({'id':  id,
+                          'token': token,
                           'name': name,
                           'email': email,
                           'is_manager': is_manager}, 200)
