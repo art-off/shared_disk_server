@@ -1,4 +1,4 @@
-from . import app
+from . import app, db
 
 from flask import request, make_response
 
@@ -7,9 +7,11 @@ from .auth_utils import token_auth, get_token
 
 from .utils import register_worker, register_manager, register_customer
 
-from .models import Worker, Customer
+from .models import Worker, Customer, CreateEditFileFolderTable, Manager, VisitFolderTable
 from .responses.worker import WorkerSchema
 from .responses.customer import CustomerSchema
+
+from datetime import datetime
 
 
 @app.route('/')
@@ -122,3 +124,62 @@ def auth_customer():
     if cust is None or not cust.check_password(password):
         return make_response({'error': 'invalid password or email'}, 403)
     return make_response({'id': cust.id})
+
+
+@app.route('/create_or_edit_file_folder')
+@token_auth.login_required
+def create_edit_file_folder():
+    token = get_token(request)
+
+    task_id = request.json.get('task_id')
+    file_name = request.json.get('file_name')
+    create_or_edit = request.json.get('create_or_edit')
+    folder_or_file = request.json.get('folder_or_file')
+
+    user, type = __get_user(token)
+
+    action = CreateEditFileFolderTable(task_id=task_id,
+                                       file_name=file_name,
+                                       create_or_edit=create_or_edit,
+                                       folder_or_file=folder_or_file,
+                                       datetime=datetime.now(),
+                                       user_type=type,
+                                       user_id=user.id)
+
+    db.session.add(action)
+    db.session.commit()
+
+    return make_response({}, 200)
+
+
+@app.route('/visit_folder')
+@token_auth.login_required
+def visit_folder():
+    token = get_token(request)
+
+    task_id = request.json.get('task_id')
+    folder_name = request.json.get('folder_name')
+
+    user, type = __get_user(token)
+
+    action = VisitFolderTable(task_id=task_id,
+                              folder_name=folder_name,
+                              datetime=datetime.now(),
+                              user_type=type,
+                              user_id=user.id)
+
+    db.session.add(action)
+    db.session.commit()
+
+    return make_response({}, 200)
+
+
+def __get_user(token):
+    type = 'manager'
+    user = Manager.query.filter_by(token=token).first()
+
+    if user is None:
+        type = 'worker'
+        user = Worker.query.filter_by(token=token).first()
+
+    return user, type

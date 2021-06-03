@@ -1,10 +1,12 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from flask_cors import CORS
 
 from config import Config
 
 app = Flask(__name__)
+CORS(app)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
@@ -20,8 +22,7 @@ from datetime import datetime
 # print(Credentials.query.all())
 # print(User.query.all()[0].credentials_id)
 # print('hello2')
-from . import routers
-from . import project_routers
+from . import routers, web_routers, project_routers
 from .google_drive import auth_routers, routers
 
 from .models import ProfessionType, Manager, Worker, Customer, DevelopmentStageType

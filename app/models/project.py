@@ -14,7 +14,7 @@ class Project(db.Model):
     customer_folder_id = db.Column(db.String(256))
 
     __customer_id = db.Column(db.Integer, db.ForeignKey(Customer.id))
-    customer = db.relationship(Customer, foreign_keys=__customer_id, uselist=False)
+    customer = db.relationship(Customer, foreign_keys=__customer_id)
 
     __manager_id = db.Column(db.Integer, db.ForeignKey(Manager.id))
     manager = db.relationship(Manager, foreign_keys=__manager_id)

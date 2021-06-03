@@ -84,15 +84,15 @@ def get_projects():
     user = __get_user(token)
     if type(user) == Manager:
         user_projects = Project.query.filter_by(manager=user).all()
-        return make_response({'projects': __projects_to_json(user_projects)}, 200)
+        return make_response({'projects': projects_to_json(user_projects)}, 200)
     elif type(user) == Worker:
         tasks = Task.query.filter_by(worker=user).all()
         stages = [x.development_stage for x in tasks]
         projects = list(set([x.project for x in stages]))
-        return make_response({'projects': __projects_to_json(projects)}, 200)
+        return make_response({'projects': projects_to_json(projects)}, 200)
 
 
-def __projects_to_json(projects):
+def projects_to_json(projects):
     json = []
 
     for p in projects:

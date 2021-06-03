@@ -8,6 +8,9 @@ from .project import Project
 from .task import Task
 from .worker import Worker, ProfessionType
 
+from .file_folder_protocol import CreateEditFileFolderTable, VisitFolderTable
+from .task_protocol import TaskProtocolTable
+
 __all__ = [
     User,
     Credentials,
@@ -19,5 +22,10 @@ __all__ = [
     Project,
     Task,
     Worker,
-    ProfessionType
+    ProfessionType,
+
+    CreateEditFileFolderTable,
+    VisitFolderTable,
+
+    TaskProtocolTable,
 ]
