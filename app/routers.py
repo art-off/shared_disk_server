@@ -7,7 +7,7 @@ from .auth_utils import token_auth, get_token
 
 from .utils import register_worker, register_manager, register_customer
 
-from .models import Worker, Customer, CreateEditFileFolderTable, Manager, VisitFolderTable
+from .models import Worker, Customer, CreateEditFileFolderTable, Manager, VisitFolderTable, Message, TaskProtocolTable
 from .responses.worker import WorkerSchema
 from .responses.customer import CustomerSchema
 
@@ -189,9 +189,15 @@ def testtest():
 def removeremove():
     v = VisitFolderTable.query.all()
     c = CreateEditFileFolderTable.query.all()
+    m = Message.query.all()
+    tp = TaskProtocolTable.query.all()
     for i in v:
         db.session.delete(i)
     for i in c:
+        db.session.delete(i)
+    for i in m:
+        db.session.delete(i)
+    for i in tp:
         db.session.delete(i)
 
     db.session.commit()

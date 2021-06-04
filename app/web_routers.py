@@ -50,7 +50,7 @@ def web_projects():
     return make_response({'projects': json}, 200)
 
 
-@app.route('/web/create_or_edit_file_folder')
+@app.route('/web/create_or_edit_file_folder', methods=['POST'])
 def web_create_or_edit_file_folder():
     project_id = int(request.json.get('project_id'))
     is_manager = request.json.get('ismanager')
@@ -85,7 +85,7 @@ def web_create_or_edit_file_folder():
     # return make_response({}, 200)
 
 
-@app.route('/web/visit')
+@app.route('/web/visit', methods=['POST'])
 def web_visir():
     project_id = int(request.json.get('project_id'))
     is_manager = request.json.get('ismanager')
@@ -120,7 +120,7 @@ def web_visir():
     # return make_response({}, 200)
 
 
-@app.route('/web/used_disk_space')
+@app.route('/web/used_disk_space', methods=['POST'])
 def web_used_disk_space():
     project_id = int(request.json.get('project_id'))
     is_manager = request.json.get('ismanager')
@@ -137,7 +137,7 @@ def web_used_disk_space():
     }, 200)
 
 
-@app.route('/web/info_about_iterations')
+@app.route('/web/info_about_iterations', methods=['POST'])
 def info_about_iterations():
     project_id = int(request.json.get('project_id'))
     is_manager = request.json.get('ismanager')
@@ -154,7 +154,7 @@ def info_about_iterations():
     }, 200)
 
 
-@app.route('/web/diagram_of_stages')
+@app.route('/web/diagram_of_stages', methods=['POST'])
 def web_diagram_of_stages():
     project_id = int(request.json.get('project_id'))
     is_manager = request.json.get('ismanager')
@@ -166,7 +166,7 @@ def web_diagram_of_stages():
     }, 200)
 
 
-@app.route('/web/diagrams_of_tasks')
+@app.route('/web/diagrams_of_tasks', methods=['POST'])
 def web_diagrams_of_tasks():
     project_id = int(request.json.get('project_id'))
     is_manager = request.json.get('ismanager')
@@ -187,12 +187,13 @@ def web_diagrams_of_tasks():
     }, 200)
 
 
-@app.route('/web/links')
+@app.route('/web/links', methods=['POST'])
 def web_links():
     project_id = int(request.json.get('project_id'))
     is_manager = request.json.get('ismanager')
 
     return make_response({
+        'general': 'https://drive.google.com/drive/folders/1FBIX3lPYgznq9b0vyChivk2uQDTraaR4?usp=sharing',
         'design': {
             'task1': 'https://drive.google.com/drive/folders/1FBIX3lPYgznq9b0vyChivk2uQDTraaR4?usp=sharing',
             'task2': 'https://drive.google.com/drive/folders/1FBIX3lPYgznq9b0vyChivk2uQDTraaR4?usp=sharing',

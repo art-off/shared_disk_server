@@ -10,6 +10,9 @@ from .worker import Worker, ProfessionType
 
 from .file_folder_protocol import CreateEditFileFolderTable, VisitFolderTable
 from .task_protocol import TaskProtocolTable
+from .project_protocol import ProjectProtocol
+
+from .message import Message
 
 __all__ = [
     User,
@@ -28,4 +31,7 @@ __all__ = [
     VisitFolderTable,
 
     TaskProtocolTable,
+    ProjectProtocol,
+
+    Message,
 ]
