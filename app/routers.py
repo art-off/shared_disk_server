@@ -126,15 +126,15 @@ def auth_customer():
     return make_response({'id': cust.id})
 
 
-@app.route('/create_or_edit_file_folder')
+@app.route('/create_or_edit_file_folder', methods=['POST'])
 @token_auth.login_required
 def create_edit_file_folder():
     token = get_token(request)
 
     task_id = request.json.get('task_id')
     file_name = request.json.get('file_name')
-    create_or_edit = request.json.get('create_or_edit')
-    folder_or_file = request.json.get('folder_or_file')
+    create_or_edit = request.json.get('create_or_edit') or 0
+    folder_or_file = request.json.get('folder_or_file') or 1
 
     user, type = __get_user(token)
 
@@ -152,7 +152,7 @@ def create_edit_file_folder():
     return make_response({}, 200)
 
 
-@app.route('/visit_folder')
+@app.route('/visit_folder', methods=['POST'])
 @token_auth.login_required
 def visit_folder():
     token = get_token(request)
@@ -171,6 +171,30 @@ def visit_folder():
     db.session.add(action)
     db.session.commit()
 
+    return make_response({}, 200)
+
+
+@app.route('/testtest')
+def testtest():
+    print(VisitFolderTable.query.all())
+    print(CreateEditFileFolderTable.query.all())
+    v = VisitFolderTable.query.all()
+    c = CreateEditFileFolderTable.query.all()
+    for i in v:
+        print(i.folder_name)
+    return make_response({}, 200)
+
+
+@app.route('/removeremove')
+def removeremove():
+    v = VisitFolderTable.query.all()
+    c = CreateEditFileFolderTable.query.all()
+    for i in v:
+        db.session.delete(i)
+    for i in c:
+        db.session.delete(i)
+
+    db.session.commit()
     return make_response({}, 200)
 
 

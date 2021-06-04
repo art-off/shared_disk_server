@@ -53,34 +53,152 @@ def web_projects():
 @app.route('/web/create_or_edit_file_folder')
 def web_create_or_edit_file_folder():
     project_id = int(request.json.get('project_id'))
+    is_manager = request.json.get('ismanager')
 
-    stages = DevelopmentStage.query.filter_by(project=Project.query.get(project_id)).all()
-    tasks = []
-    for stage in stages:
-        t = Task.query.filter_by(development_stage=stage).all()
-        tasks += t
+    return make_response({'table': [
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+    ]}, 200)
 
-    file_folder_actions = []
-    for task in tasks:
-        file_folder_actions += CreateEditFileFolderTable.query.filter_by(task_id=task.id)
-
-    print(file_folder_actions)
-    return make_response({}, 200)
+    # stages = DevelopmentStage.query.filter_by(project=Project.query.get(project_id)).all()
+    # tasks = []
+    # for stage in stages:
+    #     t = Task.query.filter_by(development_stage=stage).all()
+    #     tasks += t
+    #
+    # file_folder_actions = []
+    # for task in tasks:
+    #     file_folder_actions += CreateEditFileFolderTable.query.filter_by(task_id=task.id)
+    #
+    # print(file_folder_actions)
+    # return make_response({}, 200)
 
 
 @app.route('/web/visit')
 def web_visir():
     project_id = int(request.json.get('project_id'))
+    is_manager = request.json.get('ismanager')
 
-    stages = DevelopmentStage.query.filter_by(project=Project.query.get(project_id)).all()
-    tasks = []
-    for stage in stages:
-        t = Task.query.filter_by(development_stage=stage).all()
-        tasks += t
+    return make_response({'table': [
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+        ['value1', 'value2', 'value3', 'value4', 'value5'],
+    ]}, 200)
 
-    file_folder_actions = []
-    for task in tasks:
-        file_folder_actions += VisitFolderTable.query.filter_by(task_id=task.id)
+    # stages = DevelopmentStage.query.filter_by(project=Project.query.get(project_id)).all()
+    # tasks = []
+    # for stage in stages:
+    #     t = Task.query.filter_by(development_stage=stage).all()
+    #     tasks += t
+    #
+    # file_folder_actions = []
+    # for task in tasks:
+    #     file_folder_actions += VisitFolderTable.query.filter_by(task_id=task.id)
+    #
+    # print(file_folder_actions)
+    # return make_response({}, 200)
 
-    print(file_folder_actions)
-    return make_response({}, 200)
+
+@app.route('/web/used_disk_space')
+def web_used_disk_space():
+    project_id = int(request.json.get('project_id'))
+    is_manager = request.json.get('ismanager')
+
+    return make_response({
+        'design': {
+            'task1': '4 mb',
+            'task2': '10 mb',
+        },
+        'develop': {
+            'task3': '512 mb'
+        },
+        'testing': None,
+    }, 200)
+
+
+@app.route('/web/info_about_iterations')
+def info_about_iterations():
+    project_id = int(request.json.get('project_id'))
+    is_manager = request.json.get('ismanager')
+
+    return make_response({
+        'design': None,
+        'develop': {
+            'task1': 0,
+            'task2': 1,
+        },
+        'testing': {
+            'task3': 2
+        },
+    }, 200)
+
+
+@app.route('/web/diagram_of_stages')
+def web_diagram_of_stages():
+    project_id = int(request.json.get('project_id'))
+    is_manager = request.json.get('ismanager')
+
+    return make_response({
+        'design': 3,
+        'develop': 44,
+        'testing': 0,
+    }, 200)
+
+
+@app.route('/web/diagrams_of_tasks')
+def web_diagrams_of_tasks():
+    project_id = int(request.json.get('project_id'))
+    is_manager = request.json.get('ismanager')
+
+    return make_response({
+        'design': {
+            'task1': 13,
+            'task2': 4
+        },
+        'develop': {
+            'task3': 33,
+            'task4': 12
+        },
+        'testing': {
+            'task5': 3,
+            'task6': 12
+        },
+    }, 200)
+
+
+@app.route('/web/links')
+def web_links():
+    project_id = int(request.json.get('project_id'))
+    is_manager = request.json.get('ismanager')
+
+    return make_response({
+        'design': {
+            'task1': 'https://drive.google.com/drive/folders/1FBIX3lPYgznq9b0vyChivk2uQDTraaR4?usp=sharing',
+            'task2': 'https://drive.google.com/drive/folders/1FBIX3lPYgznq9b0vyChivk2uQDTraaR4?usp=sharing',
+        },
+        'develop': {
+            'task3': 'https://drive.google.com/drive/folders/1FBIX3lPYgznq9b0vyChivk2uQDTraaR4?usp=sharing',
+        },
+        'testing': None,
+    }, 200)
